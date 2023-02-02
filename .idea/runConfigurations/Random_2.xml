@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Random 2" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="ReversiAwesomePlayer.RandomPlayer" />
+    <option name="MAIN_CLASS_NAME" value="ReversiRandom_Java.RandomGuy" />
     <module name="ReversiGame" />
     <option name="PROGRAM_PARAMETERS" value="localhost 2" />
     <method v="2">

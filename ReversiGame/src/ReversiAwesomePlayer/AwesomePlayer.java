@@ -10,18 +10,29 @@ public class AwesomePlayer extends Player {
 
     @Override
     protected int move(int[] validMoves, int numValidMoves) {
-        int worstScore = minimax(state, 8, turn, me == 2);
+        int worstScore = minimax(state, 5, turn, me == 1);
         System.out.println("Worst score: " + worstScore);
 
         return bestMove;
     }
 
     public int getHeuristic(int[][] state) {
+        int pointsWeight = 1;
+        int cornersWeight = 20;
+
+        int[] points = GameSimulator.getNumberOfPoints(state);
+        int[] corners = GameSimulator.getNumberOfCorners(state);
+
+        int heuristic1 = pointsWeight * points[0] + cornersWeight * corners[0];
+        int heuristic2 = pointsWeight * points[1] + cornersWeight * corners[1];
+
+        return heuristic1 - heuristic2;
+    }
+
+    public int getEndHeuristic(int[][] state) {
         int[] points = GameSimulator.getNumberOfPoints(state);
 
-        int pointsDif = points[0] - points[1];
-
-        return pointsDif;
+        return points[0] - points[1];
     }
 
     public int minimax(int[][] node, int depth, int turn, boolean maximizingPlayer) {
@@ -31,8 +42,12 @@ public class AwesomePlayer extends Player {
         int[] validMoves = moveValidator.validMoves;
         int numValidMoves = moveValidator.numValidMoves;
 
-        if(depth == 0 || numValidMoves <= 0) {
+        if(depth == 0) {
             return getHeuristic(node);
+        }
+
+        if(numValidMoves <= 0) {
+            return getEndHeuristic(node);
         }
 
         int value = 0;

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Awesome vs Random" type="Multirun" separateTabs="true" reuseTabsWithFailures="false" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="true" delayTime="0.0">
+  <configuration default="false" name="Awesome (B) vs Random" type="Multirun" separateTabs="true" reuseTabsWithFailures="false" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="true" delayTime="0.0">
     <runConfiguration name="Server" type="Application" />
     <runConfiguration name="Awesome 1" type="Application" />
     <runConfiguration name="Random 2" type="Application" />

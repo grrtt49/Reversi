@@ -14,6 +14,19 @@ public class GameSimulator {
         return points;
     }
 
+    public static int[] getNumberOfCorners(int[][] state) {
+        int[] points = {0, 0};
+        int[][] cornersPos = {{0, 0}, {7, 0}, {0, 7}, {7, 7}};
+
+        for (int[] pos : cornersPos) {
+            int cornerVal = state[pos[0]][pos[1]];
+            if (cornerVal != 0) {
+                points[cornerVal - 1]++;
+            }
+        }
+        return points;
+    }
+
     public static int[][] changeColors(int[][] initState, int row, int col, int turn) {
         int incx, incy;
 
