@@ -40,19 +40,24 @@ public class GameSimulator {
                 if ((incx == 0) && (incy == 0))
                     continue;
 
-                checkDirection(state, row, col, incx, incy, turn);
+                state = checkDirection(state, row, col, incx, incy, turn);
             }
         }
 
         return state;
     }
 
-    private static int[][] checkDirection(int[][] state, int row, int col, int incx, int incy, int turn) {
+    private static int[][] checkDirection(int[][] initState, int row, int col, int incx, int incy, int turn) {
         int[] sequence = new int[7];
         int seqLen;
         int i, r, c;
 
+        int[][] state = new int[initState.length][];
+        for(int j = 0; j < initState.length; j++) {
+            state[j] = initState[j].clone();
+        }
 
+        state[row][col] = turn + 1;
 
         seqLen = 0;
         for (i = 1; i < 8; i++) {
@@ -114,5 +119,15 @@ public class GameSimulator {
         }
 
         return state;
+    }
+
+    public static void printState(int[][] state) {
+        for (int i = 7; i >= 0; i--) {
+            for (int j = 0; j < 8; j++) {
+                System.out.print(state[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 }
