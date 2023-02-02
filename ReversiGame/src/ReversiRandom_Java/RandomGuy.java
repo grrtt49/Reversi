@@ -210,15 +210,15 @@ class RandomGuy {
             System.err.println("Caught IOException: " + e.getMessage());
         }
         
-        System.out.println("Turn: " + turn);
-        System.out.println("Round: " + round);
-        for (i = 7; i >= 0; i--) {
-            for (j = 0; j < 8; j++) {
-                System.out.print(state[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println();
+//        System.out.println("Turn: " + turn);
+//        System.out.println("Round: " + round);
+//        for (i = 7; i >= 0; i--) {
+//            for (j = 0; j < 8; j++) {
+//                System.out.print(state[i][j]);
+//            }
+//            System.out.println();
+//        }
+//        System.out.println();
     }
     
     public void initClient(String host) {

@@ -30,20 +30,20 @@ public class MoveValidator {
                 validMoves[numValidMoves] = 4*8 + 4;
                 numValidMoves ++;
             }
-            System.out.println("Valid Moves:");
-            for (i = 0; i < numValidMoves; i++) {
-                System.out.println(validMoves[i] / 8 + ", " + validMoves[i] % 8);
-            }
+//            System.out.println("Valid Moves:");
+//            for (i = 0; i < numValidMoves; i++) {
+//                System.out.println(validMoves[i] / 8 + ", " + validMoves[i] % 8);
+//            }
         }
         else {
-            System.out.println("Valid Moves:");
+//            System.out.println("Valid Moves:");
             for (i = 0; i < 8; i++) {
                 for (j = 0; j < 8; j++) {
                     if (state[i][j] == 0) {
                         if (couldBe(state, i, j)) {
                             validMoves[numValidMoves] = i*8 + j;
                             numValidMoves ++;
-                            System.out.println(i + ", " + j);
+//                            System.out.println(i + ", " + j);
                         }
                     }
                 }
