@@ -40,22 +40,17 @@ public class GameSimulator {
                 if ((incx == 0) && (incy == 0))
                     continue;
 
-                state = checkDirection(state, row, col, incx, incy, turn);
+                checkDirection(state, row, col, incx, incy, turn);
             }
         }
 
         return state;
     }
 
-    private static int[][] checkDirection(int[][] initState, int row, int col, int incx, int incy, int turn) {
+    private static int[][] checkDirection(int[][] state, int row, int col, int incx, int incy, int turn) {
         int[] sequence = new int[7];
         int seqLen;
         int i, r, c;
-
-        int[][] state = new int[initState.length][];
-        for(int j = 0; j < initState.length; j++) {
-            state[j] = initState[j].clone();
-        }
 
         state[row][col] = turn + 1;
 
@@ -130,4 +125,28 @@ public class GameSimulator {
         }
         System.out.println();
     }
+
+    public static int[] getStabilityScores(int[][] state) {
+        StabilityCalculator calculator = new StabilityCalculator();
+        int[] stabilityScores = new int[] {0, 0};
+        for (int i = 0, stateLength = state.length; i < stateLength; i++) {
+            int[] r = state[i];
+            for (int j = 0, rLength = r.length; j < rLength; j++) {
+                int val = r[j];
+                if(val == 0) {
+                    continue;
+                }
+
+                if (calculator.canBeTaken(state, i, j)) {
+                    stabilityScores[val - 1]--;
+                }
+                else if (calculator.canNeverBeTaken(state, i, j)) {
+                    stabilityScores[val - 1]++;
+                }
+            }
+        }
+        return  stabilityScores;
+    }
+
+
 }

@@ -2,10 +2,10 @@ package ReversiAwesomePlayer;
 
 public class SortableState implements Comparable<SortableState> {
     int[][] state;
-    Integer heuristic;
+    Float heuristic;
     int stateID;
 
-    SortableState(int[][] state, int heuristic, int stateID) {
+    SortableState(int[][] state, float heuristic, int stateID) {
         this.state = state;
         this.heuristic = heuristic;
         this.stateID = stateID;

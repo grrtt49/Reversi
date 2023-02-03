@@ -2,7 +2,6 @@ package ReversiAwesomePlayer;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.PriorityQueue;
 
 public class AwesomePlayer extends Player {
@@ -16,41 +15,74 @@ public class AwesomePlayer extends Player {
 
     @Override
     protected int move(int[] validMoves, int numValidMoves) {
-        int[] minimax = minimax(state, 8, 8, turn, me == 1, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        System.out.println("Worst score: " + minimax[0]);
+        System.out.println("Turn: " + round);
+        if(round == 0) {
+            return 0;
+        }
+        if(round == 2) {
+            return 1;
+        }
+        MinimaxScore minimax = minimax(state, 8, 8, turn, me == 1, Float.MIN_VALUE, Float.MAX_VALUE);
+        System.out.println("Got score: " + minimax.score);
         System.out.println();
         System.out.println("Total time: " + ((double)totalTime / 1000000000));
         System.out.println("Avg time: " + (((double)totalTime / 1000000000) / times));
         System.out.println();
-        return minimax[1];
+        return minimax.move;
     }
 
-    public int getHeuristic(int[][] state) {
-        long startTime = System.nanoTime();
-        int pointsWeight = 1;
-        int cornersWeight = 10;
-        int movesWeight = 2;
+    public float getScoreFromArr(int[] arr) {
+        return 100 * ((float)(arr[0] - arr[1]) / (arr[0] + arr[1]));
+    }
 
-        MoveValidator validator1 = new MoveValidator(0);
-        validator1.getNumValidMoves(4, state);
+    public float getParityHeuristic(int[][] state) {
+        int[] points =  GameSimulator.getNumberOfPoints(state);
+        if(points[0] + points[1] == 0) {
+            return 0;
+        }
+        return getScoreFromArr(points);
+    }
 
-        MoveValidator validator2 = new MoveValidator(1);
-        validator2.getNumValidMoves(4, state);
-
-        int[] points = GameSimulator.getNumberOfPoints(state);
+    public float getCornersHeuristic(int[][] state) {
         int[] corners = GameSimulator.getNumberOfCorners(state);
-        int[] moves = new int[] {validator1.numValidMoves, validator2.numValidMoves};
+        if(corners[0] + corners[1] == 0) {
+            return 0;
+        }
+        return getScoreFromArr(corners);
+    }
 
-        int heuristic1 = movesWeight * moves[0] + pointsWeight * points[0] + cornersWeight * corners[0];
-        int heuristic2 = movesWeight * moves[1] + pointsWeight * points[1] + cornersWeight * corners[1];
+    public float getStabilityHeuristic(int[][] state) {
+        int[] stabilityScores = GameSimulator.getStabilityScores(state);
+        if(stabilityScores[0] + stabilityScores[1] == 0) {
+            return 0;
+        }
+        return getScoreFromArr(stabilityScores);
+    }
+
+    public float getMobilityHeuristic(int[][] state) {
+        MoveValidator validator = new MoveValidator(0);
+        validator.getNumValidMoves(4, state);
+        int[] moves = new int[] {validator.numValidMoves, validator.numValidMovesOther};
+        return 100 * ((float)(moves[0] - moves[1]) / (moves[0] + moves[1]));
+    }
+
+    public float getHeuristic(int[][] state) {
+        long startTime = System.nanoTime();
+
+        float parityWeight = 1;
+        float cornersWeight = 10;
+        float movesWeight = 2;
+
+        float parity = getParityHeuristic(state);
+        float corners = getCornersHeuristic(state);
+
         long endTime = System.nanoTime();
-
         totalTime += (endTime - startTime);
         times++;
-        return heuristic1 - heuristic2;
+        return parityWeight * parity + cornersWeight * corners;
     }
 
-    public int getOrderingHeuristic(int[][] state) {
+    public float getOrderingHeuristic(int[][] state) {
         int pointsWeight = 1;
         int cornersWeight = 10;
 
@@ -63,14 +95,14 @@ public class AwesomePlayer extends Player {
         return heuristic1 - heuristic2;
     }
 
-    public int getEndHeuristic(int[][] state) {
+    public float getEndHeuristic(int[][] state) {
         int[] points = GameSimulator.getNumberOfPoints(state);
         System.out.println(Arrays.toString(points));
 
-        return points[0] - points[1];
+        return (points[0] - points[1]) * 100;
     }
 
-    public int[] minimax(int[][] node, int startDepth, int depth, int turn, boolean maximizingPlayer, int alpha, int beta) {
+    public MinimaxScore minimax(int[][] node, int startDepth, int depth, int turn, boolean maximizingPlayer, float alpha, float beta) {
         MoveValidator moveValidator = new MoveValidator(turn);
         moveValidator.getValidMoves(round + (startDepth - depth), node);
 
@@ -78,14 +110,14 @@ public class AwesomePlayer extends Player {
         int numValidMoves = moveValidator.numValidMoves;
 
         if(numValidMoves <= 0) {
-            return new int[]{getEndHeuristic(node), -1};
+            return new MinimaxScore(getEndHeuristic(node), -1);
         }
 
         if(depth == 0) {
-            return new int[]{getHeuristic(node), -1};
+            return new MinimaxScore(getHeuristic(node), -1);
         }
 
-        int value;
+        float value;
         int bestMove = 0;
         PriorityQueue<SortableState> bestMoves;
 
@@ -102,7 +134,7 @@ public class AwesomePlayer extends Player {
             int moveCol = move % 8;
 
             int[][] newState = GameSimulator.changeColors(node, moveRow, moveCol, turn - 1);
-            int newStateHeuristic = getOrderingHeuristic(newState);
+            float newStateHeuristic = getOrderingHeuristic(newState);
             SortableState sortableState = new SortableState(newState, newStateHeuristic, i);
 
             bestMoves.add(sortableState);
@@ -115,7 +147,8 @@ public class AwesomePlayer extends Player {
             while (checkState != null) {
                 int[][] newState = checkState.state;
 
-                int moveValue = minimax(newState, startDepth, depth - 1, (turn % 2) + 1, false, alpha, beta)[0];
+                MinimaxScore minimaxScore = minimax(newState, startDepth, depth - 1, (turn % 2) + 1, false, alpha, beta);
+                float moveValue = minimaxScore.score;
                 if(moveValue > value || (moveValue == value && Math.random() < 0.5)) {
                     value = moveValue;
                     bestMove = checkState.stateID;
@@ -135,8 +168,9 @@ public class AwesomePlayer extends Player {
             while (checkState != null) {
                 int[][] newState = checkState.state;
 
-                int moveValue = minimax(newState, startDepth,depth - 1, (turn % 2) + 1, true, alpha, beta)[0];
-                if(moveValue < value || (moveValue == value && Math.random() < 0.5)) {
+                MinimaxScore minimaxScore = minimax(newState, startDepth,depth - 1, (turn % 2) + 1, true, alpha, beta);
+                float moveValue = minimaxScore.score;
+                if(moveValue < value) { //(moveValue == value && Math.random() < 0.5)
                     value = moveValue;
                     bestMove = checkState.stateID;
                 }
@@ -151,7 +185,7 @@ public class AwesomePlayer extends Player {
             }
         }
 
-        return new int[]{value, bestMove};
+        return new MinimaxScore(value, bestMove);
     }
 
     public static void main(String[] args) {
