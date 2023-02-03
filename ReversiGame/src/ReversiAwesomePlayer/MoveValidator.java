@@ -9,6 +9,37 @@ public class MoveValidator {
         this.me = me;
     }
 
+    public void getNumValidMoves(int round, int[][] state) {
+        int i, j;
+
+        numValidMoves = 0;
+        if (round < 4) {
+            if (state[3][3] == 0) {
+                numValidMoves ++;
+            }
+            if (state[3][4] == 0) {
+                numValidMoves ++;
+            }
+            if (state[4][3] == 0) {
+                numValidMoves ++;
+            }
+            if (state[4][4] == 0) {
+                numValidMoves ++;
+            }
+        }
+        else {
+            for (i = 0; i < 8; i++) {
+                for (j = 0; j < 8; j++) {
+                    if (state[i][j] == 0) {
+                        if (couldBe(state, i, j)) {
+                            numValidMoves ++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void getValidMoves(int round, int[][] state) {
         int i, j;
 
@@ -30,20 +61,14 @@ public class MoveValidator {
                 validMoves[numValidMoves] = 4*8 + 4;
                 numValidMoves ++;
             }
-//            System.out.println("Valid Moves:");
-//            for (i = 0; i < numValidMoves; i++) {
-//                System.out.println(validMoves[i] / 8 + ", " + validMoves[i] % 8);
-//            }
         }
         else {
-//            System.out.println("Valid Moves:");
             for (i = 0; i < 8; i++) {
                 for (j = 0; j < 8; j++) {
                     if (state[i][j] == 0) {
                         if (couldBe(state, i, j)) {
                             validMoves[numValidMoves] = i*8 + j;
                             numValidMoves ++;
-//                            System.out.println(i + ", " + j);
                         }
                     }
                 }
